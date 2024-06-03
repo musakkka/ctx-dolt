@@ -131,14 +131,16 @@ const AudioEditor: React.FC<AudioEditorProps> = ({ audioUrl }) => {
 
   const trimAudioBuffer = (buffer: AudioBuffer, start: number, end: number, context: AudioContext) => {
     const channels = [];
-    const frameCount = (buffer.duration - (end - start)) * buffer.sampleRate;
+    const startFrame = Math.floor(start * buffer.sampleRate);
+    const endFrame = Math.floor(end * buffer.sampleRate);
+    const frameCount = buffer.length - (endFrame - startFrame);
 
     for (let i = 0; i < buffer.numberOfChannels; i++) {
       const channelData = buffer.getChannelData(i);
       const newChannelData = new Float32Array(frameCount);
 
-      newChannelData.set(channelData.slice(0, start * buffer.sampleRate));
-      newChannelData.set(channelData.slice(end * buffer.sampleRate), start * buffer.sampleRate);
+      newChannelData.set(channelData.slice(0, startFrame));
+      newChannelData.set(channelData.slice(endFrame), startFrame);
 
       channels.push(newChannelData);
     }

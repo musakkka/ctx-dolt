@@ -19,7 +19,7 @@ export const List: React.FC = () => {
   useEffect(() => {
     const fetchAccounts = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/channels");
+        const response = await axios.get("/api/channels");
         setAccounts(response.data);
 
         // Redirect to the first channel if the current path is '/'
