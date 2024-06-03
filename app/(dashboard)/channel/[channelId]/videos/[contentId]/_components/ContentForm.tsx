@@ -61,11 +61,11 @@ interface ContentFormProps {
   contentId?: string;
 }
 
-export const ContentForm = ({
+export const ContentForm: React.FC<ContentFormProps> = ({
   channelId,
   initialData,
   contentId,
-}: ContentFormProps) => {
+}) => {
   const router = useRouter();
 
   const form = useForm<FormSchemaType>({
@@ -86,11 +86,11 @@ export const ContentForm = ({
         // response = await createContent({ ...data, channelId });
       }
 
-      if (response.success) {
+      if (response?.success) {
         toast.success(response.message);
         router.push(`/channel/${channelId}/content`);
       } else {
-        toast.error(response.message);
+        toast.error(response?.message || "An error occurred");
       }
     } catch (error) {
       console.error("Error saving content:", error);
@@ -117,10 +117,6 @@ export const ContentForm = ({
                     rows={20}
                     placeholder="Enter content generation script"
                     {...field}
-                    onChange={(e) => {
-                      field.onChange(e);
-                      // setCharacterCount(e.target.value.length);
-                    }}
                   />
                 </FormControl>
                 <div className="text-right text-sm text-gray-400">

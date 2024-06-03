@@ -6,8 +6,13 @@ import { useRouter, usePathname } from "next/navigation";
 import { Building2 } from "lucide-react";
 import { Hint } from "@/components/ui/hint";
 
-export const List = () => {
-  const [accounts, setAccounts] = useState([]);
+interface Account {
+  _id: string;
+  account_name: string;
+}
+
+export const List: React.FC = () => {
+  const [accounts, setAccounts] = useState<Account[]>([]);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -29,7 +34,7 @@ export const List = () => {
     fetchAccounts();
   }, [pathname, router]);
 
-  const handleIconClick = (id) => {
+  const handleIconClick = (id: string) => {
     router.push(`/channel/${id}/prompts`);
   };
 

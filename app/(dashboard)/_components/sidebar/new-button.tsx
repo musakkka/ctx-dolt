@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { useForm, SubmitHandler } from "react-hook-form";
 import { z } from "zod";
 
 import { Button } from "@/components/ui/button";
@@ -74,16 +74,18 @@ const FormSchema = z.object({
     .string()
     .min(2, { message: "Username must be at least 2 characters." }),
   account_gmail: z.string().email({ message: "Invalid email address." }),
-  account_category: z.enum(categories),
+  account_category: z.enum(categories as [string, ...string[]]),
   account_credentials: z
     .string()
     .min(6, { message: "Password must be at least 6 characters." }),
 });
 
-export const NewButton = () => {
+type FormData = z.infer<typeof FormSchema>;
+
+export const NewButton: React.FC = () => {
   const router = useRouter();
 
-  const form = useForm({
+  const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
       account_name: "",
@@ -94,7 +96,7 @@ export const NewButton = () => {
     },
   });
 
-  const onSubmit = async (data) => {
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
     try {
       const response = await axios.post("/api/channel", data);
       toast.success("Account Created Successfully!");
