@@ -115,8 +115,7 @@ const AudioEditor: React.FC<AudioEditorProps> = ({ audioUrl }) => {
   const handleTrim = async () => {
     if (selectedRegion && wavesurfer.current) {
       const { start, end } = selectedRegion;
-      const audioContext = new (window.AudioContext ||
-        window.webkitAudioContext)();
+      const audioContext = new (window.AudioContext)();
       const response = await fetch(audioUrl);
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
@@ -128,6 +127,28 @@ const AudioEditor: React.FC<AudioEditorProps> = ({ audioUrl }) => {
 
       wavesurfer.current.load(newUrl);
     }
+  };
+
+  const trimAudioBuffer = (buffer: AudioBuffer, start: number, end: number, context: AudioContext) => {
+    const channels = [];
+    const frameCount = (buffer.duration - (end - start)) * buffer.sampleRate;
+
+    for (let i = 0; i < buffer.numberOfChannels; i++) {
+      const channelData = buffer.getChannelData(i);
+      const newChannelData = new Float32Array(frameCount);
+
+      newChannelData.set(channelData.slice(0, start * buffer.sampleRate));
+      newChannelData.set(channelData.slice(end * buffer.sampleRate), start * buffer.sampleRate);
+
+      channels.push(newChannelData);
+    }
+
+    const newBuffer = context.createBuffer(buffer.numberOfChannels, frameCount, buffer.sampleRate);
+    channels.forEach((channelData, i) => {
+      newBuffer.copyToChannel(channelData, i);
+    });
+
+    return newBuffer;
   };
 
   useEffect(() => {
@@ -172,7 +193,7 @@ const AudioEditor: React.FC<AudioEditorProps> = ({ audioUrl }) => {
 
   const handleSplit = async (relativeX: number) => {
     if (wavesurfer.current) {
-      const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+      const audioContext = new (window.AudioContext)();
       const response = await fetch(audioUrl);
       const arrayBuffer = await response.arrayBuffer();
       const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
@@ -199,12 +220,12 @@ const AudioEditor: React.FC<AudioEditorProps> = ({ audioUrl }) => {
     let offset = 0,
       pos = 0;
 
-    const setUint16 = (data) => {
+    const setUint16 = (data: any) => {
       view.setUint16(pos, data, true);
       pos += 2;
     };
 
-    const setUint32 = (data) => {
+    const setUint32 = (data : any) => {
       view.setUint32(pos, data, true);
       pos += 4;
     };
