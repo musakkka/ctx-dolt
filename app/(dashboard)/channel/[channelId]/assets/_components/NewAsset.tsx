@@ -24,6 +24,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Textarea } from "@/components/ui/textarea";
+import { createPost, getSignedURL } from "./actions";
+import { CircularProgressbar } from "react-circular-progressbar";
+import "react-circular-progressbar/dist/styles.css";
+import { createAsset } from "@/actions/assetActions";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { revalidateTag } from "next/cache";
 
 const FormSchema = z.object({
   asset_description: z
@@ -33,8 +40,14 @@ const FormSchema = z.object({
 
 type FormData = z.infer<typeof FormSchema>;
 
-export const NewAsset = () => {
+export const NewAsset = ({ channelId }: { channelId: string }) => {
   const [assets, setAssets] = useState([]);
+  const [statusMessage, setStatusMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const accountId = channelId; // Replace with actual account ID
+
+  const router = useRouter();
 
   const form = useForm<FormData>({
     resolver: zodResolver(FormSchema),
@@ -43,35 +56,144 @@ export const NewAsset = () => {
     },
   });
 
-  const handleFileChange = (event) => {
+  const uploadFileToS3 = async (file, onProgress) => {
+    try {
+      const signedURLResult = await getSignedURL({
+        fileSize: file.size,
+        fileType: file.type,
+        originalName: file.name,
+        checksum: await computeSHA256(file),
+      });
+
+      if (signedURLResult.failure !== undefined) {
+        throw new Error(signedURLResult.failure);
+      }
+
+      const { url, key } = signedURLResult.success;
+
+      const xhr = new XMLHttpRequest();
+      xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+          const progress = (event.loaded / event.total) * 100;
+          onProgress(progress);
+        }
+      };
+
+      xhr.open("PUT", url, true);
+      xhr.setRequestHeader("Content-Type", file.type);
+      xhr.send(file);
+
+      return new Promise((resolve, reject) => {
+        xhr.onload = () => {
+          if (xhr.status === 200) {
+            const bucketName = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
+            const region = process.env.NEXT_PUBLIC_AWS_BUCKET_REGION;
+            const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
+            resolve(fileUrl);
+          } else {
+            reject(new Error(`Upload failed: ${xhr.statusText}`));
+          }
+        };
+
+        xhr.onerror = () => reject(new Error("Upload failed"));
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      throw error;
+    }
+  };
+
+  const computeSHA256 = async (file) => {
+    const buffer = await file.arrayBuffer();
+    const hashBuffer = await crypto.subtle.digest("SHA-256", buffer);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hashHex = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return hashHex;
+  };
+
+  const handleFileChange = async (event) => {
     const files = event.target.files;
     const newAssets = [];
+
     for (let file of files) {
+      const assetId = Date.now() + Math.random();
+      const preview = URL.createObjectURL(file);
+
+      // Show preview immediately
       newAssets.push({
-        id: Date.now() + Math.random(),
-        file: URL.createObjectURL(file),
+        id: assetId,
+        file,
+        preview,
         type: file.type.startsWith("video") ? "video" : "image",
+        url: "", // Placeholder for URL
+        progress: 0, // Initial progress
       });
+
+      // Start upload in the background
+      uploadFileToS3(file, (progress) => {
+        setAssets((prevAssets) =>
+          prevAssets.map((asset) =>
+            asset.id === assetId ? { ...asset, progress } : asset
+          )
+        );
+      })
+        .then((fileUrl) => {
+          setAssets((prevAssets) =>
+            prevAssets.map((asset) =>
+              asset.id === assetId ? { ...asset, url: fileUrl } : asset
+            )
+          );
+        })
+        .catch(console.error);
     }
+
     setAssets((prevAssets) => [...prevAssets, ...newAssets]);
   };
 
-  const handleDrop = (event) => {
+  const handleDrop = async (event) => {
     event.preventDefault();
     const files = event.dataTransfer.files;
     const newAssets = [];
+
     for (let file of files) {
+      const assetId = Date.now() + Math.random();
+      const preview = URL.createObjectURL(file);
+
+      // Show preview immediately
       newAssets.push({
-        id: Date.now() + Math.random(),
-        file: URL.createObjectURL(file),
+        id: assetId,
+        file,
+        preview,
         type: file.type.startsWith("video") ? "video" : "image",
+        url: "", // Placeholder for URL
+        progress: 0, // Initial progress
       });
+
+      // Start upload in the background
+      uploadFileToS3(file, (progress) => {
+        setAssets((prevAssets) =>
+          prevAssets.map((asset) =>
+            asset.id === assetId ? { ...asset, progress } : asset
+          )
+        );
+      })
+        .then((fileUrl) => {
+          setAssets((prevAssets) =>
+            prevAssets.map((asset) =>
+              asset.id === assetId ? { ...asset, url: fileUrl } : asset
+            )
+          );
+        })
+        .catch(console.error);
     }
+
     setAssets((prevAssets) => [...prevAssets, ...newAssets]);
   };
 
   const removeAsset = (id) => {
-    setAssets(assets.filter((asset) => asset.id !== id));
+    setAssets((assets) => assets.filter((asset) => asset.id !== id));
   };
 
   const togglePlayPause = (event) => {
@@ -83,7 +205,43 @@ export const NewAsset = () => {
     }
   };
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {};
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    setLoading(true);
+    setStatusMessage("Uploading files...");
+
+    try {
+      const assetData = assets.map((asset) => ({
+        description: data.asset_description,
+        type: asset.type,
+        url: asset.url,
+        account_id: accountId, // Replace with actual account ID
+      }));
+
+      const results = await Promise.all(assetData.map(createAsset));
+
+      results.forEach((result, index) => {
+        if (result.success) {
+          toast.success(
+            `${data.asset_description.substring(0, 20)}... created successfully`
+          );
+          setIsDialogOpen(false);
+          form.reset();
+          setAssets([]);
+          router.refresh();
+          revalidateTag('get-channel-assets'); // Add this line
+        } else {
+          console.error(`Error creating asset ${index + 1}:`, result.message);
+        }
+      });
+
+      setStatusMessage("Upload successful!");
+    } catch (error) {
+      console.error("Error during asset upload:", error);
+      setStatusMessage("Upload failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     const handleDragOver = (event) => {
@@ -99,7 +257,7 @@ export const NewAsset = () => {
 
   return (
     <div>
-      <Dialog>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger>
           <div className="mx-1">
             <Hint
@@ -166,16 +324,24 @@ export const NewAsset = () => {
                   <div key={asset.id} className="relative">
                     {asset.type === "video" ? (
                       <video
-                        src={asset.file}
-                        className="w-full h-48 object-cover rounded-md"
+                        src={asset.preview}
+                        className="w-full h-48 object-cover rounded-md relative"
                         onClick={togglePlayPause}
                       ></video>
                     ) : (
                       <img
-                        src={asset.file}
+                        src={asset.preview}
                         alt="Uploaded asset"
                         className="w-full h-48 object-cover rounded-md"
                       />
+                    )}
+                    {asset.progress < 100 && (
+                      <div className="absolute inset-0 flex items-center justify-center w-16 h-16">
+                        <CircularProgressbar
+                          value={asset.progress}
+                          text={`${Math.round(asset.progress)}%`}
+                        />
+                      </div>
                     )}
                     <button
                       onClick={() => removeAsset(asset.id)}
@@ -192,6 +358,7 @@ export const NewAsset = () => {
                   variant="activePrimary"
                   className="w-full"
                   type="submit"
+                  disabled={loading}
                 >
                   Upload
                 </Button>

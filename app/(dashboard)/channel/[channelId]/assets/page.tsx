@@ -22,7 +22,7 @@ export default async function ChannelAssetsRootPage({
         </div>
         <div>
 
-          <VideoAssetsList />
+          <VideoAssetsList channelId={params.channelId} />
         </div>
       </div>
     </div>
