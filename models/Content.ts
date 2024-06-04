@@ -7,9 +7,9 @@ const ContentSchema = new Schema({
     required: true,
   },
   prompt_id: {
-    type: Schema.Types.ObjectId,
+    type: Schema.Types.ObjectId || "Generic",
     ref: 'Prompt',
-    required: true,
+    required: false,
   },
   content_generation_script: {
     type: String,

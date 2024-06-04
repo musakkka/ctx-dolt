@@ -122,7 +122,9 @@ export const NewButton: React.FC = () => {
               <div className="bg-[#6D66FF] rounded-full p-1">
                 <Plus className="h-6 w-6 text-white" />
               </div>
-              <div className=" px-2 py-1 rounded-md text-lg font-bold">Add New</div>
+              <div className=" px-2 py-1 rounded-md text-lg font-bold">
+                Add New
+              </div>
             </button>
           </Hint>
         </div>
@@ -130,7 +132,7 @@ export const NewButton: React.FC = () => {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Create a new Channel</DialogTitle>
-          <DialogDescription>
+          <DialogDescription className="text-white">
             This will be the details for the Channel you create (eg. Youtube,
             Instagram, Tiktok)
           </DialogDescription>
@@ -147,7 +149,11 @@ export const NewButton: React.FC = () => {
                 <FormItem>
                   <FormLabel>Channel Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter channel name" {...field} />
+                    <Input
+                      className="w-full bg-transparent border-gray-500 focus:border-gray-500 text-white"
+                      placeholder="Enter channel name"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -160,7 +166,11 @@ export const NewButton: React.FC = () => {
                 <FormItem>
                   <FormLabel>Channel Username</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter channel username" {...field} />
+                    <Input
+                      className="w-full  bg-transparent border-gray-500 focus:border-gray-500 text-white"
+                      placeholder="Enter channel username"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -173,7 +183,11 @@ export const NewButton: React.FC = () => {
                 <FormItem>
                   <FormLabel>Channel Gmail</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter channel Gmail" {...field} />
+                    <Input
+                      className="w-full  bg-transparent border-gray-500 focus:border-gray-500 text-white"
+                      placeholder="Enter channel Gmail"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -186,15 +200,21 @@ export const NewButton: React.FC = () => {
                 <FormItem>
                   <FormLabel>Channel Category</FormLabel>
                   <FormControl>
-                    <Select onValueChange={field.onChange}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
+                    <Select
+                      onValueChange={field.onChange}
+                    >
+                      <SelectTrigger className="text-white bg-[#17172C] border-gray-700 border-2">
+                        <SelectValue
+
+                        placeholder="Select a category" />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className="bg-[#17172C] text-white ">
                         <SelectGroup>
                           <SelectLabel>Categories</SelectLabel>
                           {categories.map((category) => (
-                            <SelectItem key={category} value={category}>
+                            <SelectItem 
+                            
+                            key={category} value={category}>
                               {category}
                             </SelectItem>
                           ))}
@@ -214,6 +234,7 @@ export const NewButton: React.FC = () => {
                   <FormLabel>Password</FormLabel>
                   <FormControl>
                     <Input
+                      className="w-full  bg-transparent border-gray-500 focus:border-gray-500 text-white"
                       type="password"
                       placeholder="Enter password"
                       {...field}
@@ -224,7 +245,7 @@ export const NewButton: React.FC = () => {
               )}
             />
             <DialogFooter>
-              <Button type="submit">Save Channel</Button>
+              <Button variant="activePrimary" className="w-full" type="submit">Save Channel</Button>
             </DialogFooter>
           </form>
         </Form>

@@ -19,7 +19,7 @@ import {
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
-// import { createContent, updateContent } from "@/actions/contentActions"; // Assuming these actions are defined
+import { createContent, updateContent } from "@/actions/contentActions";
 
 const FormSchema = z.object({
   contentGenerationScript: z
@@ -28,25 +28,25 @@ const FormSchema = z.object({
   contentGenerationScriptApproved: z.boolean().default(false),
   contentGenerationVoiceOverUrl: z
     .string()
-    .url({ message: "Valid URL is required." })
+    // .url({ message: "Valid URL is required." })
     .optional(),
   contentGenerationVoiceOverUrlApproved: z.boolean().default(false),
   contentGenerationCaptions: z.string().optional(),
   contentGenerationCaptionsApproved: z.boolean().default(false),
   contentGenerationBackgroundVideoUrl: z
     .string()
-    .url({ message: "Valid URL is required." })
+    // .url({ message: "Valid URL is required." })
     .optional(),
   contentGenerationBackgroundVideoUrlApproved: z.boolean().default(false),
   contentPublishingTitle: z.string().optional(),
   contentPublishingDescription: z.string().optional(),
   contentPublishingFinalVideoUrl: z
     .string()
-    .url({ message: "Valid URL is required." })
+    // .url({ message: "Valid URL is required." })
     .optional(),
   finalPublishingYoutubeUrl: z
     .string()
-    .url({ message: "Valid URL is required." })
+    // .url({ message: "Valid URL is required." })
     .optional(),
   status: z.string().optional(),
   reviewCounts: z.string().optional(),
@@ -61,36 +61,55 @@ interface ContentFormProps {
   contentId?: string;
 }
 
-export const ContentForm: React.FC<ContentFormProps> = ({
+export const ContentForm = ({
   channelId,
   initialData,
   contentId,
-}) => {
+}: ContentFormProps) => {
   const router = useRouter();
 
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(FormSchema),
     defaultValues: initialData || {
       contentGenerationScript: "",
+      contentGenerationScriptApproved: false,
+      contentGenerationVoiceOverUrl: "",
+      contentGenerationVoiceOverUrlApproved: false,
+      contentGenerationCaptions: "",
+      contentGenerationCaptionsApproved: false,
+      contentGenerationBackgroundVideoUrl: "",
+      contentGenerationBackgroundVideoUrlApproved: false,
+      contentPublishingTitle: "",
+      contentPublishingDescription: "",
+      contentPublishingFinalVideoUrl: "",
+      finalPublishingYoutubeUrl: "",
+      status: "",
+      reviewCounts: "",
+      correctionsToBeMade: [{}],
     },
   });
+
+  // console.log(initialData);
 
   const onSubmit = async (data: FormSchemaType) => {
     try {
       let response;
+
       if (contentId && initialData) {
-        // Update existing content
-        // response = await updateContent({ ...data, contentId });
+        // console.log({ ...data, contentId })
+        response = await updateContent({ ...data, contentId });
+        // console.log({response});
       } else {
-        // Create new content
-        // response = await createContent({ ...data, channelId });
+        // console.log({ ...data, channelId });
+
+        response = await createContent({ ...data, channelId });
       }
 
-      if (response?.success) {
+      if (response.success) {
         toast.success(response.message);
-        router.push(`/channel/${channelId}/content`);
+        // router.push(`/channel/${channelId}/content`);
       } else {
-        toast.error(response?.message || "An error occurred");
+        toast.error(response.message);
       }
     } catch (error) {
       console.error("Error saving content:", error);
@@ -99,7 +118,7 @@ export const ContentForm: React.FC<ContentFormProps> = ({
   };
 
   return (
-    <div className="w-full ">
+    <div className="w-full">
       <Form {...form}>
         <form
           onSubmit={form.handleSubmit(onSubmit)}
@@ -120,7 +139,7 @@ export const ContentForm: React.FC<ContentFormProps> = ({
                   />
                 </FormControl>
                 <div className="text-right text-sm text-gray-400">
-                  {field.value.length} characters
+                  {field.value?.length} characters
                 </div>
                 <FormMessage />
               </FormItem>

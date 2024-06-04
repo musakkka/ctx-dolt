@@ -2,7 +2,6 @@ import { ClerkLoaded } from "@clerk/nextjs";
 import { auth } from "@clerk/nextjs/server";
 import SideBar from "./_components/sidebar";
 import OrgSideBar from "./_components/organization-sidebar";
-import NavBar from "./_components/nav-bar";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;

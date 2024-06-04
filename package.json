@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.588.0",
     "@clerk/nextjs": "4.29.12",
     "@hookform/resolvers": "^3.4.2",
     "@radix-ui/react-accordion": "^1.1.2",
@@ -51,6 +52,7 @@
     "next-themes": "^0.3.0",
     "openai": "^4.47.3",
     "react": "^18",
+    "react-circular-progressbar": "^2.1.0",
     "react-day-picker": "^8.10.1",
     "react-dom": "^18",
     "react-hook-form": "^7.51.5",
