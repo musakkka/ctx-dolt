@@ -1,9 +1,6 @@
 "use client";
 
 import React, { useRef } from "react";
-import { NewAsset } from "./NewAsset";
-import { CircularProgressbar } from "react-circular-progressbar";
-import "react-circular-progressbar/dist/styles.css";
 
 export const NewAssetWithList = ({ channelId, assets }: { channelId: string, assets: any[] }) => {
   const videoRefs = useRef([]);
@@ -19,10 +16,6 @@ export const NewAssetWithList = ({ channelId, assets }: { channelId: string, ass
 
   return (
     <div className="text-white mb-24 mt-10">
-      <div className="flex items-center justify-between mb-6">
-        <NewAsset channelId={channelId} />
-      </div>
-
       <div className="grid grid-cols-5 gap-x-4 gap-y-10">
         {assets.map((asset, index) => (
           <div

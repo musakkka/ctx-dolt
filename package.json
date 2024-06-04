@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.588.0",
+    "@aws-sdk/lib-storage": "^3.590.0",
     "@aws-sdk/s3-request-presigner": "^3.588.0",
     "@clerk/nextjs": "4.29.12",
     "@hookform/resolvers": "^3.4.2",
@@ -40,6 +41,7 @@
     "@radix-ui/react-toggle": "^1.0.3",
     "@radix-ui/react-toggle-group": "^1.0.4",
     "@radix-ui/react-tooltip": "^1.0.7",
+    "aws-sdk": "^2.1634.0",
     "axios": "^1.7.2",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
@@ -62,8 +64,10 @@
     "sonner": "^1.4.41",
     "tailwind-merge": "^2.3.0",
     "tailwindcss-animate": "^1.0.7",
+    "uuid": "^9.0.1",
     "vaul": "^0.9.1",
     "wavesurfer.js": "^7.7.15",
+    "ytdl-core": "^4.11.5",
     "zod": "^3.23.8"
   },
   "devDependencies": {
