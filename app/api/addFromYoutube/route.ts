@@ -56,7 +56,7 @@ export async function POST(request: Request): Promise<NextResponse> {
       url: fileUrl,
       account_id: channelId,
     });
-
+// TEST COMMIT
     await newAsset.save();
 
     console.log("Video downloaded, uploaded to S3, and asset created successfully");
