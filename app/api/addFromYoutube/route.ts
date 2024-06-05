@@ -24,6 +24,7 @@ export async function POST(request: Request): Promise<NextResponse> {
     console.log({ description, videoUrl, channelId });
 
     await mongooseConnect();
+    console.log(process.env.NEXT_PUBLIC_AWS_BUCKET_REGION!)
 
     const key = `${channelId}-${Date.now()}-${uuidv4()}.mp4`;
 

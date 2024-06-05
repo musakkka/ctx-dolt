@@ -19,7 +19,6 @@ const allowedFileTypes = [
   "video/quicktime",
 ];
 
-
 const generateFileName = (originalName: string, bytes = 32) => {
   const extension = originalName.split('.').pop();
   const fileName = crypto.randomBytes(bytes).toString("hex");
@@ -44,13 +43,15 @@ export const getSignedURL = async ({
   originalName,
   checksum,
 }: GetSignedURLParams): SignedURLResponse => {
+  console.log("getSignedURL called with params:", { fileType, fileSize, originalName, checksum });
+
   if (!allowedFileTypes.includes(fileType)) {
+    console.error("File type not allowed:", fileType);
     return { failure: "File type not allowed" };
   }
 
-
-
   const fileName = generateFileName(originalName);
+  console.log("Generated file name:", fileName);
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,
@@ -60,13 +61,17 @@ export const getSignedURL = async ({
     ChecksumSHA256: checksum,
   });
 
-  const url = await getSignedUrl(s3Client, putObjectCommand, {
-    expiresIn: 60, // 60 seconds
-  });
-
-  console.log({ success: url });
-
-  return { success: { url, key: fileName } };
+  try {
+    console.log("Attempting to get signed URL...");
+    const url = await getSignedUrl(s3Client, putObjectCommand, {
+      expiresIn: 60, // 60 seconds
+    });
+    console.log("Successfully obtained signed URL:", url);
+    return { success: { url, key: fileName } };
+  } catch (error) {
+    console.error("Error obtaining signed URL:", error);
+    return { failure: "Error obtaining signed URL" };
+  }
 };
 
 export async function createPost({
