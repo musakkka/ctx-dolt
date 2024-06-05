@@ -26,7 +26,7 @@ const generateFileName = (originalName: string, bytes = 32) => {
 };
 
 type SignedURLResponse = Promise<
-  | { failure?: undefined; success: { url: string, key: string } }
+  | { failure?: undefined; success: { url: string, key: string, bucketName: string, region: string } }
   | { failure: string; success?: undefined }
 >;
 
@@ -51,13 +51,7 @@ export const getSignedURL = async ({
   }
 
   const fileName = generateFileName(originalName);
-  console.log("Generated file name1:", fileName);
-
-  console.log("AWS_BUCKET_REGION1:", process.env.AWS_BUCKET_REGION);
-console.log("AWS_ACCESS_KEY1:", process.env.AWS_PROJECT_ACCESS_KEY);
-console.log("AWS_SECRET_ACCESS_KEY1:", process.env.AWS_SECRET_ACCESS_KEY);
-console.log("AWS_BUCKET_NAME1:", process.env.AWS_BUCKET_NAME);
-
+  console.log("Generated file name:", fileName);
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,
@@ -73,7 +67,7 @@ console.log("AWS_BUCKET_NAME1:", process.env.AWS_BUCKET_NAME);
       expiresIn: 60, // 60 seconds
     });
     console.log("Successfully obtained signed URL:", url);
-    return { success: { url, key: fileName } };
+    return { success: { url, key: fileName, bucketName: process.env.AWS_BUCKET_NAME!, region: process.env.AWS_BUCKET_REGION! } };
   } catch (error) {
     console.error("Error obtaining signed URL:", error);
     return { failure: "Error obtaining signed URL" };
