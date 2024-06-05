@@ -149,7 +149,7 @@ export const NewAsset = ({ channelId }: { channelId: string }) => {
         .catch(console.error);
     }
     console.log("AWS_BUCKET_REGION:", process.env.AWS_BUCKET_REGION);
-console.log("AWS_ACCESS_KEY:", process.env.AWS_ACCESS_KEY);
+console.log("AWS_ACCESS_KEY:", process.env.AWS_PROJECT_ACCESS_KEY);
 console.log("AWS_SECRET_ACCESS_KEY:", process.env.AWS_SECRET_ACCESS_KEY);
 console.log("AWS_BUCKET_NAME:", process.env.AWS_BUCKET_NAME);
 

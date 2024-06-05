@@ -7,7 +7,7 @@ import crypto from "crypto";
 const s3Client = new S3Client({
   region: process.env.AWS_BUCKET_REGION!,
   credentials: {
-    accessKeyId: process.env.AWS_ACCESS_KEY!,
+    accessKeyId: process.env.AWS_PROJECT_ACCESS_KEY!,
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 });
@@ -52,9 +52,9 @@ export const getSignedURL = async ({
 
   const fileName = generateFileName(originalName);
   console.log("Generated file name1:", fileName);
-  
+
   console.log("AWS_BUCKET_REGION1:", process.env.AWS_BUCKET_REGION);
-console.log("AWS_ACCESS_KEY1:", process.env.AWS_ACCESS_KEY);
+console.log("AWS_ACCESS_KEY1:", process.env.AWS_PROJECT_ACCESS_KEY);
 console.log("AWS_SECRET_ACCESS_KEY1:", process.env.AWS_SECRET_ACCESS_KEY);
 console.log("AWS_BUCKET_NAME1:", process.env.AWS_BUCKET_NAME);
 
