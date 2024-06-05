@@ -38,3 +38,21 @@ export const updatePrompt = async (data: PromptData): Promise<{ success: boolean
     return { success: false, message: "Error updating prompt!" };
   }
 };
+
+
+export const deletePrompt = async (promptId: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    await mongooseConnect();
+    const result = await Prompt.deleteOne({ _id: promptId });
+
+    if (result.deletedCount === 0) {
+      return { success: false, message: "Content not found" };
+    }
+
+    revalidateTag("get-chanel-prompts");
+    return { success: true, message: "Prompt Deleted Successfully!" };
+  } catch (error) {
+    console.error("Error deleting prompt:", error);
+    return { success: false, message: "Error deleting prompt!" };
+  }
+};

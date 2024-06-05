@@ -7,6 +7,7 @@ import { Asset } from "@/models/Asset";
 import { v4 as uuidv4 } from 'uuid';
 import stream from 'stream';
 import { promisify } from 'util';
+import { revalidatePath } from 'next/cache';
 
 const pipeline = promisify(stream.pipeline);
 
@@ -57,10 +58,13 @@ export async function POST(request: Request): Promise<NextResponse> {
       url: fileUrl,
       account_id: channelId,
     });
-// TEST COMMIT
+
     await newAsset.save();
 
     console.log("Video downloaded, uploaded to S3, and asset created successfully");
+
+    // Revalidate the path to ensure the updated data is reflected
+    revalidatePath(`/channel/${channelId}`);
 
     return NextResponse.json({ message: "Video downloaded, uploaded to S3, and asset created successfully" });
   } catch (err) {

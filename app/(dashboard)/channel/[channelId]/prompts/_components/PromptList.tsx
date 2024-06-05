@@ -1,17 +1,11 @@
 import React from "react";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
-import Link from 'next/link';
+
 import { getChannelPrompts } from "@/actions/getChannelPrompts";
 import { unstable_cache } from "next/cache";
 import { revalidateTag } from 'next/cache'
+import  PromptCard  from "./PromptCard";
 
 
 
@@ -49,21 +43,11 @@ export const PromptList = async ({ channelId }: { channelId: string }) => {
       <div className="mt-4 mr-6">
         <div className="grid grid-cols-1 gap-4 mt-4">
           {prompts.map((prompt) => (
-            <Link key={prompt._id} 
-            href={`/channel/${channelId}/prompts/${prompt._id}`}
-            >
-              <Card className="bg-[#0E1026] border-none cursor-pointer">
-                <CardHeader className="space-y-4">
-                  <CardTitle className="text-white text-xl">
-                    {prompt.promptTitle}
-                  </CardTitle>
-                  <Separator />
-                  <CardDescription className="text-white text-lg">
-                    {prompt.promptContent}
-                  </CardDescription>
-                </CardHeader>
-              </Card>
-            </Link>
+            <PromptCard
+            key={prompt._id} 
+              prompt={prompt} 
+              channelId={channelId} 
+            />
           ))}
         </div>
       </div>

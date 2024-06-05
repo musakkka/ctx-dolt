@@ -70,6 +70,7 @@ export const AddFromYoutube = ({ channelId }: { channelId: string }) => {
       }
     } catch (error) {
       toast.error("An error occurred. Please try again.");
+      console.log("Error: ", error);
     } finally {
       setLoading(false);
     }

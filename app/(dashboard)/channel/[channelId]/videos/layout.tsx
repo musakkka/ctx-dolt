@@ -23,13 +23,13 @@ export default async function DashboardLayout({ children, params }: DashboardLay
             <p className="text-white">CHANNEL NAME: {channelName}</p>
           </div>
           <div className="flex items-center">
-            <Link href={`/channel/${params.channelId}/prompts/new`}>
+            <Link href={`/channel/${params.channelId}/videos/new`}>
               <div className="flex items-center cursor-pointer">
                 <div className="bg-[#6D66FF] rounded-full p-1">
                   <Plus className="h-6 w-6 text-white" />
                 </div>
                 <div className="px-2 py-1 rounded-md text-lg font-bold text-white">
-                  Add New Prompt
+                  Add New Content
                 </div>
               </div>
             </Link>

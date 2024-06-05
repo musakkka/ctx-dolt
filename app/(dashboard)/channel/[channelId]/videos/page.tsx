@@ -19,7 +19,7 @@ export default function ChannelVideosRootPage({ params }: { params: { channelId:
           <div className="bg-[#6D66FF] rounded-full p-1">
             <Plus className="h-6 w-6 text-white" />
           </div>
-          <div className="text-lg font-bold text-white">Add New Prompt</div>
+          <div className="text-lg font-bold text-white">Add New Content</div>
         </div>
       </div>
     </div>

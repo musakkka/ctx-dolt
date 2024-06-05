@@ -88,3 +88,20 @@ export const updateContent = async (data: ContentData): Promise<{ success: boole
     return { success: false, message: "Error updating content!" };
   }
 };
+
+export const deleteContent = async (contentId: string): Promise<{ success: boolean; message: string }> => {
+  try {
+    await mongooseConnect();
+    const result = await Content.deleteOne({ _id: contentId });
+
+    if (result.deletedCount === 0) {
+      return { success: false, message: "Content not found" };
+    }
+
+    revalidateTag("get-channel-content");
+    return { success: true, message: "Content Deleted Successfully!" };
+  } catch (error) {
+    console.error("Error deleting content:", error);
+    return { success: false, message: "Error deleting content!" };
+  }
+};
