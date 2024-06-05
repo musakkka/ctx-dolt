@@ -51,7 +51,13 @@ export const getSignedURL = async ({
   }
 
   const fileName = generateFileName(originalName);
-  console.log("Generated file name:", fileName);
+  console.log("Generated file name1:", fileName);
+  
+  console.log("AWS_BUCKET_REGION1:", process.env.AWS_BUCKET_REGION);
+console.log("AWS_ACCESS_KEY1:", process.env.AWS_ACCESS_KEY);
+console.log("AWS_SECRET_ACCESS_KEY1:", process.env.AWS_SECRET_ACCESS_KEY);
+console.log("AWS_BUCKET_NAME1:", process.env.AWS_BUCKET_NAME);
+
 
   const putObjectCommand = new PutObjectCommand({
     Bucket: process.env.AWS_BUCKET_NAME,

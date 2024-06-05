@@ -86,8 +86,8 @@ export const NewAsset = ({ channelId }: { channelId: string }) => {
       return new Promise((resolve, reject) => {
         xhr.onload = () => {
           if (xhr.status === 200) {
-            const bucketName = process.env.NEXT_PUBLIC_AWS_BUCKET_NAME;
-            const region = process.env.NEXT_PUBLIC_AWS_BUCKET_REGION;
+            const bucketName = process.env.AWS_BUCKET_NAME;
+            const region = process.env.AWS_BUCKET_REGION;
             const fileUrl = `https://${bucketName}.s3.${region}.amazonaws.com/${key}`;
             resolve(fileUrl);
           } else {
@@ -148,6 +148,11 @@ export const NewAsset = ({ channelId }: { channelId: string }) => {
         })
         .catch(console.error);
     }
+    console.log("AWS_BUCKET_REGION:", process.env.AWS_BUCKET_REGION);
+console.log("AWS_ACCESS_KEY:", process.env.AWS_ACCESS_KEY);
+console.log("AWS_SECRET_ACCESS_KEY:", process.env.AWS_SECRET_ACCESS_KEY);
+console.log("AWS_BUCKET_NAME:", process.env.AWS_BUCKET_NAME);
+
 
     setAssets((prevAssets) => [...prevAssets, ...newAssets]);
   };
