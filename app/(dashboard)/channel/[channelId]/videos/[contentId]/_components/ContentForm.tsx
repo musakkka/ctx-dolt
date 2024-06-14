@@ -326,7 +326,6 @@ export const ContentForm = ({
                 <FormLabel>Final Video URL</FormLabel>
                 <FormControl>
                   <Input
-                    type="url"
                     className="w-full text-xl bg-transparent border-gray-500 focus:border-gray-500 text-white"
                     placeholder="Enter final video URL"
                     {...field}
@@ -344,7 +343,6 @@ export const ContentForm = ({
                 <FormLabel>Final YouTube URL</FormLabel>
                 <FormControl>
                   <Input
-                    type="url"
                     className="w-full text-xl bg-transparent border-gray-500 focus:border-gray-500 text-white"
                     placeholder="Enter YouTube URL"
                     {...field}

@@ -17,7 +17,13 @@ const allowedFileTypes = [
   "image/png",
   "video/mp4",
   "video/quicktime",
+  "audio/mpeg",       // for .mp3 files
+  "audio/wav",        // for .wav files
+  "audio/ogg",        // for .ogg files
+  "audio/mp4",        // for .m4a files
+  "audio/aac",        // for .aac files
 ];
+
 
 const generateFileName = (originalName: string, bytes = 32) => {
   const extension = originalName.split('.').pop();

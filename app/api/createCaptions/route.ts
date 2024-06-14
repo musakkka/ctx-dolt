@@ -24,7 +24,8 @@ export async function GET(request: NextApiRequest, response: NextApiResponse): P
         }
 
         // Send a request to the Python server for transcription
-        const transcriptionResponse = await fetch('http://35.153.19.55/transcribe/word-level', {
+
+        const transcriptionResponse = await fetch(`${process.env.PATH_TO_PYTHON_SERVER}/transcribe/word-level`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
