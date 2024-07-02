@@ -3,15 +3,9 @@ import { mongooseConnect } from "@/libs/mongoose";
 import ytdl from "ytdl-core";
 import { Asset } from "@/models/Asset";
 import { v4 as uuidv4 } from 'uuid';
-import { promisify } from 'util';
 import { revalidatePath } from 'next/cache';
-import stream from 'stream';
 import { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions, SASProtocol, StorageSharedKeyCredential } from "@azure/storage-blob";
-import ffmpeg from 'fluent-ffmpeg';
-import fs from 'fs';
-import path from 'path';
-
-const pipeline = promisify(stream.pipeline);
+import { PassThrough } from 'stream';
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING!;
 const containerName = "your-container-name";  // Replace with your container name
@@ -61,48 +55,15 @@ export async function POST(request: Request): Promise<NextResponse> {
     const containerClient = await getOrCreateContainer(containerName);
     const blockBlobClient = containerClient.getBlockBlobClient(key);
 
-    // Create temporary file paths for audio, video, and final output
-    const audioPath = path.join('/tmp', `${uuidv4()}.mp3`);
-    const videoPath = path.join('/tmp', `${uuidv4()}.mp4`);
-    const outputPath = path.join('/tmp', key);
+    // Download video and pipe directly to Azure Blob Storage
+    const videoStream = ytdl(videoUrl, { quality: 'highest' });
 
-    // Download audio
-    await pipeline(
-      ytdl(videoUrl, { quality: 'highestaudio' }),
-      fs.createWriteStream(audioPath)
-    );
+    const pass = new PassThrough();
+    const uploadPromise = blockBlobClient.uploadStream(pass, 4 * 1024 * 1024, 20);  // Buffer size and concurrency
 
-    // Download video
-    await pipeline(
-      ytdl(videoUrl, { quality: 'highestvideo' }),
-      fs.createWriteStream(videoPath)
-    );
+    videoStream.pipe(pass);
 
-    // Combine audio and video using ffmpeg
-    await new Promise((resolve, reject) => {
-      ffmpeg()
-        .input(videoPath)
-        .input(audioPath)
-        .outputOptions('-c:v copy')
-        .outputOptions('-c:a aac')
-        .save(outputPath)
-        .on('end', resolve)
-        .on('error', reject);
-    });
-
-    // Upload combined file to Azure Blob Storage
-    const uploadStream = (blockBlobClient: any) => {
-      const pass = new stream.PassThrough();
-      return {
-        writeStream: pass,
-        promise: blockBlobClient.uploadStream(pass, 4 * 1024 * 1024, 20),  // Buffer size and concurrency
-      };
-    };
-
-    const { writeStream, promise } = uploadStream(blockBlobClient);
-
-    await pipeline(fs.createReadStream(outputPath), writeStream);
-    await promise;
+    await uploadPromise;
 
     const fileUrl = await generateSasToken(key, containerClient);
 
@@ -115,17 +76,12 @@ export async function POST(request: Request): Promise<NextResponse> {
 
     await newAsset.save();
 
-    console.log("Video downloaded, merged, uploaded to Azure Blob Storage, and asset created successfully");
+    console.log("Video downloaded, uploaded to Azure Blob Storage, and asset created successfully");
 
     // Revalidate the path to ensure the updated data is reflected
     revalidatePath(`/channel/${channelId}`);
 
-    // Clean up temporary files
-    fs.unlinkSync(audioPath);
-    fs.unlinkSync(videoPath);
-    fs.unlinkSync(outputPath);
-
-    return NextResponse.json({ message: "Video downloaded, merged, uploaded to Azure Blob Storage, and asset created successfully" });
+    return NextResponse.json({ message: "Video downloaded, uploaded to Azure Blob Storage, and asset created successfully" });
   } catch (err) {
     console.error(err);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
