@@ -10,7 +10,7 @@ export async function GET(request: NextApiRequest, response: NextApiResponse): P
         // Find content with voice over URL approved and captions empty
         const content = await Content.findOne({ 
             content_generation_voice_over_url: { $ne: "" },
-            content_generation_voice_over_url_approved: true,
+            // content_generation_voice_over_url_approved: true,
             $or: [
                 { content_generation_captions: { $exists: false } },
                 { content_generation_captions: "" }
@@ -42,6 +42,7 @@ export async function GET(request: NextApiRequest, response: NextApiResponse): P
         const transcriptionResult = await transcriptionResponse.json();
         const captions = transcriptionResult.word_transcripts;
         console.log({captions});
+        console.log(`${process.env.PATH_TO_PYTHON_SERVER}/transcribe/word-level`)
 
         // Update the content with the new captions
         const updatedContent = await Content.updateOne(

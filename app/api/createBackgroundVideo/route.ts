@@ -26,7 +26,7 @@ export async function GET(request: NextApiRequest, response: NextApiResponse): P
         // Find content with voice over URL approved and captions empty
         const content = await Content.findOne({
             content_generation_voice_over_url: { $ne: "" },
-            content_generation_voice_over_url_approved: true,
+            // content_generation_voice_over_url_approved: true,
         });
         if (!content) {
             return NextResponse.json({ error: "No content available" }, { status: 404 });

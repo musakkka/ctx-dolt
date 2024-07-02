@@ -22,7 +22,11 @@ interface ContentData {
   correctionsToBeMade?: object[];
   contentId?: string;
   channelId?: string;
+  tags?: string[];
+  keywords?: string;
+  category?: string;
 }
+
 
 export const createContent = async (data: ContentData): Promise<{ success: boolean; message: string }> => {
   try {
@@ -30,23 +34,26 @@ export const createContent = async (data: ContentData): Promise<{ success: boole
     const newContent = await Content.create({
       content_generation_script: data.contentGenerationScript,
       content_generation_script_approved: data.contentGenerationScriptApproved,
-      content_generation_voice_over_url: data.contentGenerationVoiceOverUrl,
+      content_generation_voice_over_url: data.contentGenerationVoiceOverUrl || '',
       content_generation_voice_over_url_approved: data.contentGenerationVoiceOverUrlApproved,
-      content_generation_captions: data.contentGenerationCaptions,
+      content_generation_captions: data.contentGenerationCaptions || '',
       content_generation_captions_approved: data.contentGenerationCaptionsApproved,
-      content_generation_background_video_url: data.contentGenerationBackgroundVideoUrl,
+      content_generation_background_video_url: data.contentGenerationBackgroundVideoUrl || '',
       content_generation_background_video_url_approved: data.contentGenerationBackgroundVideoUrlApproved,
-      content_publishing_title: data.contentPublishingTitle,
-      content_publishing_description: data.contentPublishingDescription,
-      content_publishing_final_video_url: data.contentPublishingFinalVideoUrl,
-      final_publishing_youtube_url: data.finalPublishingYoutubeUrl,
-      status: data.status,
-      review_counts: data.reviewCounts,
-      corrections_to_be_made: data.correctionsToBeMade,
-      account_id: data.channelId,
-      prompt_id: "66563158aa66b9928466743c"
+      content_publishing_title: data.contentPublishingTitle || '',
+      content_publishing_description: data.contentPublishingDescription || '',
+      content_publishing_final_video_url: data.contentPublishingFinalVideoUrl || '',
+      final_publishing_youtube_url: data.finalPublishingYoutubeUrl || '',
+      status: data.status || '',
+      review_counts: data.reviewCounts || '',
+      corrections_to_be_made: data.correctionsToBeMade || [],
+      account_id: data.channelId || '',
+      prompt_id: "66563158aa66b9928466743c",
+      tags: data.tags || [],
+      keywords: data.keywords || '',
+      category: data.category || ''
     });
-    console.log({newContent})
+    console.log({ newContent });
     revalidateTag("get-channel-content");
 
     return { success: true, message: "Content Created Successfully!" };
@@ -55,6 +62,8 @@ export const createContent = async (data: ContentData): Promise<{ success: boole
     return { success: false, message: "Error creating content!" };
   }
 };
+
+
 
 export const updateContent = async (data: ContentData): Promise<{ success: boolean; message: string; data?: object }> => {
   try {

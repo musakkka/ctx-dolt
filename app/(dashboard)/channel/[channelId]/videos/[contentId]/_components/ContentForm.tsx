@@ -251,7 +251,6 @@ export const ContentForm = ({
                   <FormLabel>Background Video URL</FormLabel>
                   <FormControl>
                     <Input
-                      type="url"
                       className="w-full text-xl bg-transparent border-gray-500 focus:border-gray-500 text-white"
                       placeholder="Enter background video URL"
                       {...field}
