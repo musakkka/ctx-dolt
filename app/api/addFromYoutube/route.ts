@@ -24,7 +24,7 @@ async function getOrCreateContainer(containerName: string) {
 
 async function generateSasToken(blobName: string, containerClient: any) {
   const expiresOn = new Date();
-  expiresOn.setMinutes(expiresOn.getMinutes() + 60);  // Set the SAS token to expire in 60 minutes
+  expiresOn.setFullYear(expiresOn.getFullYear() + 10);  // Set the SAS token to expire in 10 years
 
   const sasOptions = {
     containerName: containerClient.containerName,
