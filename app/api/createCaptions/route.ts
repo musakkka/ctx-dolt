@@ -3,28 +3,36 @@ import { NextResponse } from "next/server";
 import { mongooseConnect } from "@/libs/mongoose";
 import { NextApiRequest, NextApiResponse } from 'next';
 
-export async function GET(request: NextApiRequest, response: NextApiResponse): Promise<any> {
+export const maxDuration = 59; // This function can run for a maximum of 5 seconds
+export const dynamic = 'force-dynamic'
+
+export async function POST(request: NextApiRequest, response: NextApiResponse): Promise<any> {
     try {
+        const body = await request.json();
+
+        if (!body.permissions || body.permissions !== 'allowed') {
+            return NextResponse.json({ error: "Permissions not allowed" }, { status: 403 });
+        }
+
         await mongooseConnect();
 
-        // Find content with voice over URL approved and captions empty
-        const content = await Content.findOne({ 
+        // Find content with a non-empty voice over URL and captions empty or not existing
+        const content = await Content.findOne({
             content_generation_voice_over_url: { $ne: "" },
-            // content_generation_voice_over_url_approved: true,
             $or: [
+                { content_generation_captions: { $eq: "" } },
                 { content_generation_captions: { $exists: false } },
-                { content_generation_captions: "" }
+                { content_generation_captions: "[]" } 
             ]
         });
 
-        console.log({content})
+        console.log({ content });
 
         if (!content) {
-            return NextResponse.json({ error: "No content with approved voice over and empty captions found" }, { status: 404 });
+            return NextResponse.json({ error: "No content with non-empty voice over URL and empty captions found" }, { status: 404 });
         }
 
         // Send a request to the Python server for transcription
-
         const transcriptionResponse = await fetch(`${process.env.PATH_TO_PYTHON_SERVER}/transcribe/word-level`, {
             method: 'POST',
             headers: {
@@ -41,8 +49,8 @@ export async function GET(request: NextApiRequest, response: NextApiResponse): P
 
         const transcriptionResult = await transcriptionResponse.json();
         const captions = transcriptionResult.word_transcripts;
-        console.log({captions});
-        console.log(`${process.env.PATH_TO_PYTHON_SERVER}/transcribe/word-level`)
+        console.log({ captions });
+        console.log(`${process.env.PATH_TO_PYTHON_SERVER}/transcribe/word-level`);
 
         // Update the content with the new captions
         const updatedContent = await Content.updateOne(

@@ -2,6 +2,12 @@ import { Content } from "@/models/Content";
 import { NextResponse } from "next/server";
 import { mongooseConnect } from "@/libs/mongoose";
 import OpenAI from 'openai';
+import { NextApiRequest, NextApiResponse } from "next";
+
+
+export const maxDuration = 59; // This function can run for a maximum of 5 seconds
+export const dynamic = 'force-dynamic'
+
 
 let openai: OpenAI | undefined;
 
@@ -30,7 +36,7 @@ async function generateMetadata(script: string): Promise<{ title: string, descri
             Keywords: <keyword1>, <keyword2>, <keyword3>` },
             { role: 'user', content: script }
         ],
-        model: 'gpt-4',
+        model: 'gpt-4o',
     });
 
     const metadata = chatGptResponse.choices[0].message.content;
@@ -44,14 +50,29 @@ async function generateMetadata(script: string): Promise<{ title: string, descri
     return { title, description, tags, keywords };
 }
 
-export async function GET(request: NextApiRequest): Promise<NextResponse> {
+export async function POST(request: NextApiRequest, response: NextApiResponse): Promise<any> {
     try {
+        const body = await request.json();
+
+        if (!body.permissions || body.permissions !== 'allowed') {
+            return NextResponse.json({ error: "Permissions not allowed" }, { status: 403 });
+        }
+        
         await mongooseConnect();
 
-        const content = await Content.findOne({ content_generation_script_approved: true });
+        // Find content with approved script and without existing metadata
+        const content = await Content.findOne({
+            content_generation_script_approved: true,
+            $or: [
+                { content_publishing_title: { $in: [null, ""] } },
+                { content_publishing_description: { $in: [null, ""] } },
+                { tags: { $in: [null, []] } },
+                { keywords: { $in: [null, ""] } }
+            ]
+        });
 
         if (!content) {
-            return NextResponse.json({ error: "No content found" }, { status: 404 });
+            return NextResponse.json({ error: "No content found with approved script and missing metadata" }, { status: 404 });
         }
 
         const { content_generation_script } = content;

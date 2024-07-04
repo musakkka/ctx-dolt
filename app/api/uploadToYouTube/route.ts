@@ -1,19 +1,32 @@
 import { Content } from "@/models/Content";
 import { NextResponse } from "next/server";
 import { mongooseConnect } from "@/libs/mongoose";
-import { NextApiRequest } from 'next';
+import { NextApiRequest, NextApiResponse } from 'next';
 import { subMinutes } from 'date-fns';
 
-export async function GET(request: NextApiRequest): Promise<NextResponse> {
+export const maxDuration = 59; // This function can run for a maximum of 5 seconds
+
+
+export async function POST(request: NextApiRequest, response: NextApiResponse): Promise<any> {
     try {
+        const body = await request.json();
+  
+        if (!body.permissions || body.permissions !== 'allowed') {
+            return NextResponse.json({ error: "Permissions not allowed" }, { status: 403 });
+        }
         await mongooseConnect();
 
         const tenMinutesAgo = subMinutes(new Date(), 10);
 
-        // Find content with a non-empty final video URL and updated more than 10 minutes ago
+        // Find content with a non-empty final video URL, non-empty metadata, updated more than 10 minutes ago, and no YouTube URL
         const content = await Content.findOne({
             content_publishing_final_video_url: { $ne: "" },
-            // updated_at: { $lte: tenMinutesAgo }
+            content_publishing_title: { $ne: "" },
+            content_publishing_description: { $ne: "" },
+            tags: { $ne: [] },
+            keywords: { $ne: "" },
+            final_publishing_youtube_url: { $in: [null, ""] },
+            updated_at: { $lte: tenMinutesAgo }
         });
 
         if (!content) {
@@ -26,10 +39,9 @@ export async function GET(request: NextApiRequest): Promise<NextResponse> {
             content_publishing_description,
             tags,
             keywords,
-            category
+            category,
+            account_id // Assume account_id is used as the channel ID
         } = content;
-
-        console.log("Retrieved content:", content);
 
         const payload = {
             file: content_publishing_final_video_url,
@@ -38,9 +50,10 @@ export async function GET(request: NextApiRequest): Promise<NextResponse> {
             tags: tags.length > 0 ? tags.join(", ") : "default, tags", // Convert tags array to string
             keywords: keywords || "default, keywords",
             category: category || "22", // Default category if not provided
-            privacyStatus: "public"
+            privacyStatus: "private",
+            channelId: account_id // Send the channel ID
         };
-
+        
         console.log("Making request to Python server with data:", JSON.stringify(payload));
 
         const uploadToYoutubeResponse = await fetch(`${process.env.PATH_TO_PYTHON_SERVER}/uploadToYouTube`, {
