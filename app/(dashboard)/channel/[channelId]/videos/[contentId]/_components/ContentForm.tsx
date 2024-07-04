@@ -166,6 +166,7 @@ export const ContentForm = ({
               </FormItem>
             )}
           />
+          {/* START FROM HERE */}
           <div className="flex items-center space-x-3">
             <FormField
               control={form.control}
@@ -387,6 +388,7 @@ export const ContentForm = ({
               </FormItem>
             )}
           />
+          {/* CLOSE HERE */}
           <Button
             variant="activePrimary"
             type="submit"
