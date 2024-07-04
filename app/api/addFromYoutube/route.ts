@@ -8,7 +8,7 @@ import { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions, 
 import { PassThrough } from 'stream';
 
 const AZURE_STORAGE_CONNECTION_STRING = process.env.AZURE_STORAGE_CONNECTION_STRING!;
-const containerName = "your-container-name";  // Replace with your container name
+const containerName = process.env.AZURE_CONTAINER_NAME!;
 
 const blobServiceClient = BlobServiceClient.fromConnectionString(AZURE_STORAGE_CONNECTION_STRING);
 
