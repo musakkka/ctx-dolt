@@ -26,12 +26,12 @@ const OrgSideBar = () => {
             <div className="text-white">Videos</div>
           </Link>
         </Button>
-        <Button variant={isPromptsActive ? "activePrimary" : "ghost"} className={isPromptsActive ? "" : "hover:bg-transparent"}>
+        {/* <Button variant={isPromptsActive ? "activePrimary" : "ghost"} className={isPromptsActive ? "" : "hover:bg-transparent"}>
           <Link className="flex items-center" href={`/channel/${channelId}/prompts`}>
             <Cable className="h-4 w-4 mr-2 text-white" />
             <div className="text-white">Prompts</div>
           </Link>
-        </Button>
+        </Button> */}
         <Button variant={isAssetsActive ? "activePrimary" : "ghost"} className={isAssetsActive ? "" : "hover:bg-transparent"}>
           <Link className="flex items-center hover:text-black" href={`/channel/${channelId}/assets`}>
             <PaintBucket className="h-4 w-4 mr-2 text-white" />

@@ -9,6 +9,8 @@ import { Poppins } from "next/font/google";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input"; 
 import logo from "@/public/logo.svg"
+import { useClerk } from '@clerk/nextjs';
+
 
 import { cn } from "@/lib/utils";
 
@@ -17,6 +19,8 @@ const font = Poppins({ subsets: ["latin"], weight: ["600"] });
 
 const SideBar = () => {
   const [isClient, setIsClient] = useState(false);
+  const { signOut } = useClerk();
+
 
   useEffect(() => {
     setIsClient(true);
@@ -51,9 +55,17 @@ const SideBar = () => {
         <List />
       </div>
       <div className="w-full flex-1">
-      <div className="text-xl text-gray-600 mb-4 font-bold">ACTIONS</div>
+      <div className="text-xl text-gray-600 mb-4 font-bold flex-col items-center space-y-6">ACTIONS</div>
 
         <NewButton />
+        <div>
+
+
+        <button onClick={() => signOut({ redirectUrl: '/' })}>
+      Sign out
+    </button>
+
+        </div>
       </div>
      </div>
     </aside>

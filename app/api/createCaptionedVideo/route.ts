@@ -35,7 +35,7 @@ export async function POST(request: NextApiRequest, response: NextApiResponse): 
         const backgroundVideoUrl = content.content_generation_background_video_url;
         const captions = content.content_generation_captions;
 
-        const apiUrl = `${process.env.PATH_TO_PYTHON_SERVER}/create-captioned-semantic-videos-v2`;
+        const apiUrl = `${process.env.PATH_TO_PYTHON_SERVER}/create-captioned-video/v1`;
         const postData = {
             background_video_url: backgroundVideoUrl,
             captions: captions,

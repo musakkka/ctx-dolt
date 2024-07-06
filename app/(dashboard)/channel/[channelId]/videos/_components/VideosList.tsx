@@ -17,7 +17,7 @@ const getCachedChannelContent = unstable_cache(
 
 export const VideosList = async ({ channelId }: { channelId: string }) => {
   // Fetch content from the server
-  const contents = await getCachedChannelContent(channelId);
+  const contents = await getChannelContent(channelId);
   revalidateTag('get-channel-content');
 
 

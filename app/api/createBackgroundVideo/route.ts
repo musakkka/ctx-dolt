@@ -42,6 +42,7 @@ const backgroundMusicUrls = [
         }
         const voice_over_url = content.content_generation_voice_over_url;
         const channel_id = content.account_id;
+        const contentId = content._id
         const assets = await Asset.aggregate([
             { $match: { account_id: channel_id } }, // Match assets by channel_id
             { $sample: { size: 13 } } // Select 13 random documents
@@ -52,11 +53,12 @@ const backgroundMusicUrls = [
         const background_music_url = backgroundMusicUrls[Math.floor(Math.random() * backgroundMusicUrls.length)];
 
 
-        const apiUrl = `${process.env.PATH_TO_PYTHON_SERVER}/create-video`; // Replace with your API URL
+        const apiUrl = `${process.env.PATH_TO_PYTHON_SERVER}/create-background-video/v1`; // Replace with your API URL
         const postData = {
             audio_url: voice_over_url,  // Make sure this key matches the one in FastAPI
             assetUrls: assetUrls,
-            background_music_url: background_music_url  // Add background music URL to the request
+            background_music_url: background_music_url,  // Add background music URL to the request
+            contentId: contentId
         };
         const apiResponse = await axios.post(apiUrl, postData);
         const videoPath = apiResponse.data.video_path; // Get the URL from the response

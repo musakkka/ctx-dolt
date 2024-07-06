@@ -20,6 +20,9 @@ import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
 
 import { createContent, updateContent } from "@/actions/contentActions";
+import { getAccessLevel } from "@/access_levels/accessLevels";
+import { useUser } from "@clerk/nextjs";
+
 
 const FormSchema = z.object({
   contentGenerationScript: z
@@ -67,6 +70,13 @@ export const ContentForm = ({
   contentId,
 }: ContentFormProps) => {
   const router = useRouter();
+
+  const { user } = useUser();
+  const email = user?.primaryEmailAddress?.emailAddress;
+
+  const accessLevel = getAccessLevel(email);
+
+  console.log("User Form Clerk In Test Route", email);
 
   const form = useForm<FormSchemaType>({
     resolver: zodResolver(FormSchema),
@@ -166,8 +176,9 @@ export const ContentForm = ({
               </FormItem>
             )}
           />
-          {/* START FROM HERE */}
-          <div className="flex items-center space-x-3">
+          {accessLevel === 'SUPER_ADMIN' && (
+            <>
+            <div className="flex items-center space-x-3">
             <FormField
               control={form.control}
               name="contentGenerationVoiceOverUrl"
@@ -388,11 +399,14 @@ export const ContentForm = ({
               </FormItem>
             )}
           />
-          {/* CLOSE HERE */}
+
+
+           </>
+          )} 
           <Button
             variant="activePrimary"
             type="submit"
-            className="w-full cursor-pointer"
+            className="w-full cursor-pointer mt-6"
           >
             {contentId ? "Update Content" : "Save Content"}
           </Button>

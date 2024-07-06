@@ -30,8 +30,8 @@ async function generateMetadata(script: string): Promise<{ title: string, descri
             {
                 role: 'system', content: `
             You are an AI specialized in creating compelling and optimized metadata for video content. Based on the provided script, generate the following metadata in this format:
-            Title: <compelling title>
-            Description: <detailed description>
+            Title: <compelling title under 60 characters, using words your audience can relate to, include numbers when necessary, and add emotive words>
+            Description: <2 sentences, use hashtags, make it relatable and compelling, spark curiosity>
             Tags: <tag1>, <tag2>, <tag3>
             Keywords: <keyword1>, <keyword2>, <keyword3>` },
             { role: 'user', content: script }

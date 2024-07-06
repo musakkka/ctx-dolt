@@ -55,6 +55,10 @@ const ContentSchema = new Schema({
     type: String,
     default: '',
   },
+  content_publishing_final_video_url_approved: {
+    type: Boolean,
+    default: false,
+  },
   tags: {
     type: [String],
     default: [],

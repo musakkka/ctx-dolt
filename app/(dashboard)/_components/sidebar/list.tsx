@@ -24,7 +24,7 @@ export const List: React.FC = () => {
 
         // Redirect to the first channel if the current path is '/'
         if (pathname === '/' && response.data.length > 0) {
-          router.push(`/channel/${response.data[0]._id}/prompts`);
+          router.push(`/channel/${response.data[0]._id}/videos`);
         }
       } catch (error) {
         console.error("Error fetching accounts:", error);
@@ -35,7 +35,7 @@ export const List: React.FC = () => {
   }, [pathname, router]);
 
   const handleIconClick = (id: string) => {
-    router.push(`/channel/${id}/prompts`);
+    router.push(`/channel/${id}/videos`);
   };
 
   return (
