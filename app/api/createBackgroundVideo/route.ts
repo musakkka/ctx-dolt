@@ -21,7 +21,6 @@ const backgroundMusicUrls = [
     "https://doltmediabucketv2.blob.core.windows.net/doltmediav2bucket/bg_music/spotifydown.com - Pieces.mp3",
     "https://doltmediabucketv2.blob.core.windows.net/doltmediav2bucket/bg_music/spotifydown.com - Runaway - Piano Rendition.mp3",
     "https://doltmediabucketv2.blob.core.windows.net/doltmediav2bucket/bg_music/spotifydown.com - Where Is My Mind_ - Piano Rendition.mp3",
-    "https://doltmediabucketv2.blob.core.windows.net/doltmediav2bucket/bg_music/spotifydown.com - Yuri on ICE.mp3"
   ];
 
   export async function POST(request: NextApiRequest, response: NextApiResponse): Promise<any> {
