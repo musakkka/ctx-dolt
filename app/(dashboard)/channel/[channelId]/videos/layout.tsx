@@ -3,6 +3,9 @@ import VideosList from "./_components/VideosList";
 import Link from 'next/link';
 import { getChannelNameById } from "@/actions/getChannellInfo";
 
+export const maxDuration = 59; // This function can run for a maximum of 59 seconds
+export const dynamic = 'force-dynamic';
+
 interface DashboardLayoutProps {
   children: React.ReactNode;
   params: {
