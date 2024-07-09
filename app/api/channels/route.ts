@@ -3,6 +3,9 @@ import { NextResponse } from "next/server";
 import { mongooseConnect } from "@/libs/mongoose";
 import { NextApiRequest, NextApiResponse } from 'next';
 
+export const maxDuration = 59; // This function can run for a maximum of 59 seconds
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request, response: NextApiResponse): Promise<any> {
     // const { userId } = auth();
 

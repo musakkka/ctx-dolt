@@ -60,6 +60,7 @@ const backgroundMusicUrls = [
             background_music_url: background_music_url,  // Add background music URL to the request
             contentId: contentId
         };
+        console.log(postData)
         const apiResponse = await axios.post(apiUrl, postData);
         const videoPath = apiResponse.data.video_path; // Get the URL from the response
 

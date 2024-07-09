@@ -26,7 +26,7 @@ export async function POST(request: NextApiRequest, response: NextApiResponse): 
             tags: { $ne: [] },
             keywords: { $ne: "" },
             final_publishing_youtube_url: { $in: [null, ""] },
-            updated_at: { $lte: tenMinutesAgo }
+            // updated_at: { $lte: tenMinutesAgo }
         });
 
         if (!content) {
@@ -50,7 +50,7 @@ export async function POST(request: NextApiRequest, response: NextApiResponse): 
             tags: tags.length > 0 ? tags.join(", ") : "default, tags", // Convert tags array to string
             keywords: keywords || "default, keywords",
             category: category || "22", // Default category if not provided
-            privacyStatus: "private",
+            privacyStatus: "public",
             channelId: account_id // Send the channel ID
         };
         

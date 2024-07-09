@@ -4,10 +4,10 @@ import { getAccessLevel } from "@/access_levels/accessLevels";
 import { currentUser } from '@clerk/nextjs/server';
 
 export const getChannelContent = async (channelId: string) => {
-  const user = await currentUser();
+  // const user = await currentUser();
 
 
-  console.log("User Form Clerk In Test Route", user.emailAddresses[0].emailAddress);
+  // console.log("User Form Clerk In Test Route", user.emailAddresses[0].emailAddress);
   try {
     await mongooseConnect();
     const content = await Content.find({ account_id: channelId })

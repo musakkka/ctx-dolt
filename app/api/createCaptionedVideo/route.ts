@@ -26,7 +26,7 @@ export async function POST(request: NextApiRequest, response: NextApiResponse): 
                 { content_generation_captions: { $ne: "" } },
                 { content_generation_captions: { $ne: "[]" } }
             ],
-            updated_at: { $lt: tenMinutesAgo }
+            // updated_at: { $lt: tenMinutesAgo }
         });
         if (!content) {
             return NextResponse.json({ error: "No content available that has non-empty background video URL, an empty final video URL, non-empty captions, and the content being updated more than 10 minutes ago." }, { status: 404 });
