@@ -26,7 +26,7 @@ export async function POST(request: NextApiRequest, response: NextApiResponse): 
             tags: { $ne: [] },
             keywords: { $ne: "" },
             final_publishing_youtube_url: { $in: [null, ""] },
-            // updated_at: { $lte: tenMinutesAgo }
+            updated_at: { $lte: tenMinutesAgo }
         });
 
         if (!content) {
